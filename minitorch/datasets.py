@@ -5,6 +5,17 @@ from typing import List, Tuple
 
 
 def make_pts(N: int) -> List[Tuple[float, float]]:
+    """Generate a list of random points.
+
+    Args:
+    ----
+        N (int): The number of points to generate.
+
+    Returns:
+    -------
+        List[Tuple[float, float]]: A list of tuples representing the generated points.
+
+    """
     X = []
     for i in range(N):
         x_1 = random.random()
@@ -21,6 +32,17 @@ class Graph:
 
 
 def simple(N: int) -> Graph:
+    """Generate a simple graph.
+
+    Args:
+    ----
+        N (int): The number of points to generate.
+
+    Returns:
+    -------
+        Graph: The generated graph.
+
+    """
     X = make_pts(N)
     y = []
     for x_1, x_2 in X:
@@ -30,6 +52,17 @@ def simple(N: int) -> Graph:
 
 
 def diag(N: int) -> Graph:
+    """Generate a diagonal graph.
+
+    Args:
+    ----
+        N (int): The number of points to generate.
+
+    Returns:
+    -------
+        Graph: The generated graph.
+
+    """
     X = make_pts(N)
     y = []
     for x_1, x_2 in X:
@@ -39,6 +72,17 @@ def diag(N: int) -> Graph:
 
 
 def split(N: int) -> Graph:
+    """Generate a split graph.
+
+    Args:
+    ----
+        N (int): The number of points to generate.
+
+    Returns:
+    -------
+        Graph: The generated graph.
+
+    """
     X = make_pts(N)
     y = []
     for x_1, x_2 in X:
@@ -48,25 +92,59 @@ def split(N: int) -> Graph:
 
 
 def xor(N: int) -> Graph:
+    """Generate an XOR graph.
+
+    Args:
+    ----
+        N (int): The number of points to generate.
+
+    Returns:
+    -------
+        Graph: The generated graph.
+
+    """
     X = make_pts(N)
     y = []
     for x_1, x_2 in X:
-        y1 = 1 if ((x_1 < 0.5 and x_2 > 0.5) or (x_1 > 0.5 and x_2 < 0.5)) else 0
+        y1 = 1 if x_1 < 0.5 and x_2 > 0.5 or x_1 > 0.5 and x_2 < 0.5 else 0
         y.append(y1)
     return Graph(N, X, y)
 
 
 def circle(N: int) -> Graph:
+    """Generate a circle graph.
+
+    Args:
+    ----
+        N (int): The number of points to generate.
+
+    Returns:
+    -------
+        Graph: The generated graph.
+
+    """
     X = make_pts(N)
     y = []
     for x_1, x_2 in X:
-        x1, x2 = (x_1 - 0.5, x_2 - 0.5)
+        x1, x2 = x_1 - 0.5, x_2 - 0.5
         y1 = 1 if x1 * x1 + x2 * x2 > 0.1 else 0
         y.append(y1)
     return Graph(N, X, y)
 
 
 def spiral(N: int) -> Graph:
+    """Generate a spiral graph.
+
+    Args:
+    ----
+        N (int): The number of points to generate.
+
+    Returns:
+    -------
+        Graph: The generated graph.
+
+    """
+
     def x(t: float) -> float:
         return t * math.cos(t) / 20.0
 
