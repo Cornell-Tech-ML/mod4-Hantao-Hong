@@ -7,8 +7,6 @@ from numba import njit as _njit
 from .autodiff import Context
 from .tensor import Tensor
 from .tensor_data import (
-    MAX_DIMS,
-    Index,
     Shape,
     Strides,
     Storage,
@@ -22,6 +20,18 @@ Fn = TypeVar("Fn")
 
 
 def njit(fn: Fn, **kwargs: Any) -> Fn:
+    """A wrapper for Numba's njit function with inline always.
+
+    Args:
+    ----
+        fn (Fn): The function to be JIT compiled.
+        **kwargs (Any): Additional keyword arguments for njit.
+
+    Returns:
+    -------
+        Fn: The JIT compiled function.
+
+    """
     return _njit(inline="always", **kwargs)(fn)  # type: ignore
 
 
@@ -120,6 +130,7 @@ def _tensor_conv1d(
                 )
                 out[out_pos] = acc
 
+
 tensor_conv1d = njit(_tensor_conv1d, parallel=True)
 
 
@@ -153,6 +164,18 @@ class Conv1dFun(Function):
 
     @staticmethod
     def backward(ctx: Context, grad_output: Tensor) -> Tuple[Tensor, Tensor]:
+        """Compute the gradient of the 1D Convolution
+
+        Args:
+        ----
+            ctx : Context
+            grad_output : Gradient of the output tensor
+
+        Returns:
+        -------
+            Tuple[Tensor, Tensor] : Gradients of the input and weight tensors
+
+        """
         input, weight = ctx.saved_values
         batch, in_channels, w = input.shape
         out_channels, in_channels, kw = weight.shape
@@ -319,6 +342,18 @@ class Conv2dFun(Function):
 
     @staticmethod
     def backward(ctx: Context, grad_output: Tensor) -> Tuple[Tensor, Tensor]:
+        """Compute the gradient of the 2D Convolution
+
+        Args:
+        ----
+            ctx : Context
+            grad_output : Gradient of the output tensor
+
+        Returns:
+        -------
+            Tuple[Tensor, Tensor] : Gradients of the input and weight tensors
+
+        """
         input, weight = ctx.saved_values
         batch, in_channels, h, w = input.shape
         out_channels, in_channels, kh, kw = weight.shape

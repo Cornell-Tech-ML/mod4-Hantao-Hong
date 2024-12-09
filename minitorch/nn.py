@@ -4,7 +4,7 @@ from . import operators
 from .autodiff import Context
 from .fast_ops import FastOps
 from .tensor import Tensor
-from .tensor_functions import Function, rand, tensor
+from .tensor_functions import Function, rand
 
 
 # List of functions in this file:
@@ -121,7 +121,7 @@ class Max(Function):
         Returns:
         -------
             Tuple containing the gradient of the loss with respect to the input tensor and the dimension.
-        
+
         """
         input_tensor, dim = ctx.saved_values
         return (argmax(input_tensor, int(dim.item())) * grad_output, dim)

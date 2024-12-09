@@ -327,6 +327,7 @@ def _sum_practice(out: Storage, a: Storage, size: int) -> None:
         if pos == 0:
             out[cuda.blockIdx.x] = cache[0]
 
+
 jit_sum_practice = cuda.jit()(_sum_practice)
 
 
@@ -392,7 +393,7 @@ def tensor_reduce(
             o = index_to_position(out_index, out_strides)
 
             out_index[reduce_dim] = out_index[reduce_dim] * BLOCK_DIM + pos
-            if (out_index[reduce_dim] < a_shape[reduce_dim]):
+            if out_index[reduce_dim] < a_shape[reduce_dim]:
                 in_a = index_to_position(out_index, a_strides)
                 cache[pos] = a_storage[in_a]
                 cuda.syncthreads()
@@ -557,9 +558,7 @@ def _tensor_matrix_multiply(
                 accum += a_shared[pi, k] * b_shared[k, pj]
 
     if i < out_shape[1] and j < out_shape[2]:
-        out[
-            batch * out_strides[0] + i * out_strides[1] + j * out_strides[2]
-        ] = accum
+        out[batch * out_strides[0] + i * out_strides[1] + j * out_strides[2]] = accum
 
 
 tensor_matrix_multiply = jit(_tensor_matrix_multiply)
