@@ -35,7 +35,7 @@ class Conv1d(minitorch.Module):
 
     def forward(self, input):
         batch_size, in_channels, width = input.shape
-        return minitorch.conv1d(input.view(batch_size, in_channels, width), self.weights.value) + self.bias.value
+        return minitorch.conv1d(input.contiguous().view(batch_size, in_channels, width), self.weights.value) + self.bias.value
 
 
 class CNNSentimentKim(minitorch.Module):
@@ -76,9 +76,9 @@ class CNNSentimentKim(minitorch.Module):
         """
         # TODO: Implement for Task 4.5.
         # raise NotImplementedError("Need to implement for Task 4.5")
-        c1 = self.conv1(embeddings.permute(0, 2, 1)).relu()
-        c2 = self.conv2(embeddings.permute(0, 2, 1)).relu()
-        c3 = self.conv3(embeddings.permute(0, 2, 1)).relu()
+        c1 = self.conv1(embeddings.permute(0, 2, 1).contiguous()).relu()
+        c2 = self.conv2(embeddings.permute(0, 2, 1).contiguous()).relu()
+        c3 = self.conv3(embeddings.permute(0, 2, 1).contiguous()).relu()
 
         mid = (
             minitorch.nn.max(c1, 2) + minitorch.nn.max(c2, 2) + minitorch.nn.max(c3, 2)
