@@ -1,4 +1,5 @@
 import random
+import os
 
 import embeddings
 
@@ -6,7 +7,7 @@ import minitorch
 from datasets import load_dataset
 
 BACKEND = minitorch.TensorBackend(minitorch.FastOps)
-
+import zipfile
 
 def RParam(*shape):
     r = 0.1 * (minitorch.rand(shape, backend=BACKEND) - 0.5)
@@ -274,6 +275,19 @@ if __name__ == "__main__":
     validation_size = 100
     learning_rate = 0.01
     max_epochs = 250
+
+    # Specify the correct path to your embeddings file
+    # embeddings_path = "/path/to/your/embeddings/file"  # Update this path as needed
+
+    # if not os.path.exists(embeddings_path):
+    #     print(f"Error: The embeddings file at {embeddings_path} does not exist. Please check the file path and try again.")
+    #     exit(1)
+
+    # try:
+    #     embeddings_obj = embeddings.GloveEmbedding(embeddings_path, d_emb=50, show_progress=True)
+    # except zipfile.BadZipFile:
+    #     print("Error: The embeddings file is not a valid zip file. Please check the file path and try again.")
+    #     exit(1)
 
     (X_train, y_train), (X_val, y_val) = encode_sentiment_data(
         load_dataset("glue", "sst2"),
