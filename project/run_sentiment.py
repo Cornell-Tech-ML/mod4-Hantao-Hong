@@ -86,7 +86,7 @@ class CNNSentimentKim(minitorch.Module):
         )
         linear_out = self.linear(mid.view(mid.shape[0], min.shape[1]))
         dropout_out = minitorch.nn.dropout(linear_out, self.dropout_rate)
-        return minitorch.nn.sigmoid(dropout_out)
+        return dropout_out.sigmoid().view(embeddings.shape[0])
 
 
 
