@@ -68,7 +68,7 @@ class CNNSentimentKim(minitorch.Module):
         self.conv2 = Conv1d(embedding_size, feature_map_size, filter_sizes[1])
         self.conv3 = Conv1d(embedding_size, feature_map_size, filter_sizes[2])
         self.linear = Linear(feature_map_size, 1)
-        self.dropout_rate = dropout_rate
+        self.dropout_rate = dropout
 
 
     def forward(self, embeddings):
