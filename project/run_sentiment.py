@@ -34,9 +34,8 @@ class Conv1d(minitorch.Module):
         self.bias = RParam(1, out_channels, 1)
 
     def forward(self, input):
-        # TODO: Implement for Task 4.5.
-        # raise NotImplementedError("Need to implement for Task 4.5")
-        return minitorch.conv1d(input, self.weights.value) + self.bias.value
+        batch_size, in_channels, width = input.shape
+        return minitorch.conv1d(input.view(batch_size, in_channels, width), self.weights.value) + self.bias.value
 
 
 class CNNSentimentKim(minitorch.Module):
@@ -77,14 +76,14 @@ class CNNSentimentKim(minitorch.Module):
         """
         # TODO: Implement for Task 4.5.
         # raise NotImplementedError("Need to implement for Task 4.5")
-        c1 = self.conv1(embeddings).relu()
-        c2 = self.conv2(embeddings).relu()
-        c3 = self.conv3(embeddings).relu()
+        c1 = self.conv1(embeddings.permute(0, 2, 1)).relu()
+        c2 = self.conv2(embeddings.permute(0, 2, 1)).relu()
+        c3 = self.conv3(embeddings.permute(0, 2, 1)).relu()
 
         mid = (
-            minitorch.nn.max(x1, 2) + minitorch.nn.max(x2, 2) + minitorch.nn.max(x3, 2)
+            minitorch.nn.max(c1, 2) + minitorch.nn.max(c2, 2) + minitorch.nn.max(c3, 2)
         )
-        linear_out = self.linear(mid.view(mid.shape[0], min.shape[1]))
+        linear_out = self.linear(mid.view(mid.shape[0], mid.shape[1]))
         dropout_out = minitorch.nn.dropout(linear_out, self.dropout_rate)
         return dropout_out.sigmoid().view(embeddings.shape[0])
 
