@@ -162,10 +162,10 @@ class SentenceSentimentTrain:
                 range(0, n_training_samples, batch_size)
             ):
                 y = minitorch.tensor(
-                    y_train[example_num : example_num + batch_size], backend=BACKEND
+                    y_train[int(example_num) : int(example_num) + int(batch_size)], backend=BACKEND
                 )
                 x = minitorch.tensor(
-                    X_train[example_num : example_num + batch_size], backend=BACKEND
+                    X_train[int(example_num) : int(example_num) + int(batch_size)], backend=BACKEND
                 )
                 x.requires_grad_(True)
                 y.requires_grad_(True)
