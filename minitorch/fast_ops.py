@@ -253,10 +253,10 @@ def tensor_zip(
                 j = index_to_position(a_index, a_strides)
                 broadcast_index(out_index, out_shape, b_shape, b_index)
                 k = index_to_position(b_index, b_strides)
-                out[o] = fn(a_storage[j], b_storage[k])
+                out[int(o)] = fn(a_storage[int(j)], b_storage[int(k)])
         else:
             for i in prange(len(out)):
-                out[i] = fn(a_storage[i], b_storage[i])
+                out[int(i)] = fn(a_storage[int(i)], b_storage[int(i)])
 
     return njit(_zip, parallel=True)  # type: ignore
 
