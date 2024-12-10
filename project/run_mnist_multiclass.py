@@ -83,7 +83,7 @@ class Network(minitorch.Module):
             minitorch.avgpool2d(self.out, (4, 4)).view(BATCH, 392)
         ).relu()
         if self.training:
-            liner_output = minitorch.dropout(l, 0.25)
+            liner_output = minitorch.dropout(liner_output, 0.25)
         return minitorch.logsoftmax(self.layer2.forward(liner_output), dim=1)
 
 
