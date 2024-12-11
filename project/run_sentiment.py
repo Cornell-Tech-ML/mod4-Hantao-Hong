@@ -1,4 +1,5 @@
 import random
+import os
 
 import embeddings
 
@@ -6,7 +7,7 @@ import minitorch
 from datasets import load_dataset
 
 BACKEND = minitorch.TensorBackend(minitorch.FastOps)
-
+import zipfile
 
 def RParam(*shape):
     r = 0.1 * (minitorch.rand(shape, backend=BACKEND) - 0.5)
@@ -34,8 +35,8 @@ class Conv1d(minitorch.Module):
         self.bias = RParam(1, out_channels, 1)
 
     def forward(self, input):
-        # TODO: Implement for Task 4.5.
-        raise NotImplementedError("Need to implement for Task 4.5")
+        batch_size, in_channels, width = input.shape
+        return minitorch.conv1d(input.contiguous().view(batch_size, in_channels, width), self.weights.value) + self.bias.value
 
 
 class CNNSentimentKim(minitorch.Module):
@@ -62,14 +63,31 @@ class CNNSentimentKim(minitorch.Module):
         super().__init__()
         self.feature_map_size = feature_map_size
         # TODO: Implement for Task 4.5.
-        raise NotImplementedError("Need to implement for Task 4.5")
+        # raise NotImplementedError("Need to implement for Task 4.5")
+        self.conv1 = Conv1d(embedding_size, feature_map_size, filter_sizes[0])
+        self.conv2 = Conv1d(embedding_size, feature_map_size, filter_sizes[1])
+        self.conv3 = Conv1d(embedding_size, feature_map_size, filter_sizes[2])
+        self.linear = Linear(feature_map_size, 1)
+        self.dropout_rate = dropout
+
 
     def forward(self, embeddings):
         """
         embeddings tensor: [batch x sentence length x embedding dim]
         """
         # TODO: Implement for Task 4.5.
-        raise NotImplementedError("Need to implement for Task 4.5")
+        # raise NotImplementedError("Need to implement for Task 4.5")
+        c1 = self.conv1(embeddings.permute(0, 2, 1).contiguous()).relu()
+        c2 = self.conv2(embeddings.permute(0, 2, 1).contiguous()).relu()
+        c3 = self.conv3(embeddings.permute(0, 2, 1).contiguous()).relu()
+
+        mid = (
+            minitorch.nn.max(c1, 2) + minitorch.nn.max(c2, 2) + minitorch.nn.max(c3, 2)
+        )
+        linear_out = self.linear(mid.view(mid.shape[0], mid.shape[1]))
+        dropout_out = minitorch.nn.dropout(linear_out, self.dropout_rate)
+        return dropout_out.sigmoid().view(embeddings.shape[0])
+
 
 
 # Evaluation helper methods
@@ -145,10 +163,10 @@ class SentenceSentimentTrain:
                 range(0, n_training_samples, batch_size)
             ):
                 y = minitorch.tensor(
-                    y_train[example_num : example_num + batch_size], backend=BACKEND
+                    y_train[int(example_num) : int(example_num) + int(batch_size)], backend=BACKEND
                 )
                 x = minitorch.tensor(
-                    X_train[example_num : example_num + batch_size], backend=BACKEND
+                    X_train[int(example_num) : int(example_num) + int(batch_size)], backend=BACKEND
                 )
                 x.requires_grad_(True)
                 y.requires_grad_(True)
@@ -257,6 +275,19 @@ if __name__ == "__main__":
     validation_size = 100
     learning_rate = 0.01
     max_epochs = 250
+
+    # Specify the correct path to your embeddings file
+    # embeddings_path = "/path/to/your/embeddings/file"  # Update this path as needed
+
+    # if not os.path.exists(embeddings_path):
+    #     print(f"Error: The embeddings file at {embeddings_path} does not exist. Please check the file path and try again.")
+    #     exit(1)
+
+    # try:
+    #     embeddings_obj = embeddings.GloveEmbedding(embeddings_path, d_emb=50, show_progress=True)
+    # except zipfile.BadZipFile:
+    #     print("Error: The embeddings file is not a valid zip file. Please check the file path and try again.")
+    #     exit(1)
 
     (X_train, y_train), (X_val, y_val) = encode_sentiment_data(
         load_dataset("glue", "sst2"),
